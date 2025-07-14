@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="Изображение поста" class="img-fluid">
+    {% endif %}
+    <p>{{ post.content }}</p>
+
+    <p><strong>Автор:</strong> {{ post.author.username }}</p>
+    <p><strong>Дата создания:</strong> {{ post.created_at }}</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <h3>Комментарии</h3>
+
+    {% if comments %}
+        {% for comment in comments %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text">{{ comment.content }}</p>
+                    <p class="card-text"><small>Автор: {{ comment.author.username }}, {{ comment.created_at }}</small></p>
+
+                    {% if user.is_authenticated %}
+                        <button type="button" class="btn btn-secondary reply-btn" data-comment-id="{{ comment.id }}">Ответить</button>
+                        <form method="post" class="reply-form mt-2" style="display:none;" data-comment-id="{{ comment.id }}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="id_content_{{ comment.id }}" class="form-label">Ваш ответ</label>
+                                <textarea name="content" id="id_content_{{ comment.id }}" class="form-control" rows="4"></textarea>
+                                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </form>
+                    {% endif %}
+
+                    {% if comment.replies.exists %}
+                        {% for reply in comment.replies.all %}
+                            <div class="ms-4 mt-2">
+                                <p>{{ reply.content }}</p>
+                                <p><small>Ответ от: {{ reply.author.username }}, {{ reply.created_at }}</small></p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Пока нет комментариев.</p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <h3>Оставить комментарий</h3>
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_content" class="form-label">Ваш комментарий</label>
+                <textarea name="content" id="id_content" class="form-control" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    {% endif %}
+
+    {% if user.is_authenticated and user == post.author %}
+        <a href="{% url 'blog:post_update' pk=post.id %}" class="btn btn-warning">Редактировать пост</a>
+        <a href="{% url 'blog:post_delete' pk=post.id %}" class="btn btn-danger">Удалить пост</a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %} <!-- Добавляем явно, на случай если наследование не работает -->
+{% load crispy_forms_tags %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Добро пожаловать на блог</h1>
+
+        <!-- Слайдер -->
+        <div id="carouselExample" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for post in posts|slice:":3" %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" class="d-block w-100 card-img-top" alt="{{ post.title }}">
+                        {% else %}
+                            <img src="{% static 'images/default.png' %}" class="d-block w-100 card-img-top" alt="Дефолтное изображение">
+                        {% endif %}
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>{{ post.title }}</h5>
+                            <p>{{ post.content|truncatewords:10 }}</p>
+                            <a href="{% url 'blog:post_detail' pk=post.id %}" class="btn btn-primary btn-sm">Читать</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <form method="get" class="mb-4">
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </form>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if posts %}
+            <div class="row">
+                {% for post in posts %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" class="card-img-top" alt="Изображение поста">
+                            {% else %}
+                                <img src="{% static 'images/default.png' %}" class="card-img-top" alt="Дефолтное изображение">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ post.title }}</h5>
+                                <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+                                <a href="{% url 'blog:post_detail' pk=post.id %}" class="btn btn-primary">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Пока нет постов.</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Создать пост{% endblock %}
+
+{% block content %}
+    <h1>Создать новый пост</h1>
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <datalist id="category_suggestions">
+            {% for category in categories %}
+                <option value="{{ category.name }}">
+            {% empty %}
+                <option value="">
+            {% endfor %}
+        </datalist>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+{% endblock %}

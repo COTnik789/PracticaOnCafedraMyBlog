@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+    <h1>Регистрация</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {% if form %}
+            {{ form|crispy }}
+        {% else %}
+            <p>Форма не загружена.</p>
+        {% endif %}
+        <button type="submit" class="btn btn-primary mt-3">Зарегистрироваться</button>
+    </form>
+{% endblock %}

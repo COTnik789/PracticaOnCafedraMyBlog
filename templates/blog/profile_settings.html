@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Настройки профиля{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Настройки профиля</h1>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="mb-3">
+            <h4>Текущая фотография профиля</h4>
+            {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}" alt="Текущая фотография" style="max-width: 200px; border-radius: 10px;">
+            {% else %}
+                <img src="{% static 'images/default_profile_foto.png' %}" alt="Дефолтная фотография" style="max-width: 200px; border-radius: 10px;">
+            {% endif %}
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+{% endblock %}

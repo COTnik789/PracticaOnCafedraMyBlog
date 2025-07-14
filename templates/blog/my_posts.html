@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои посты{% endblock %}
+
+{% block content %}
+    <h1>Мои посты</h1>
+    {% if posts %}
+        <ul class="list-group">
+            {% for post in posts %}
+                <li class="list-group-item">
+                    <a href="{% url 'blog:post_detail' pk=post.id %}">{{ post.title }}</a>
+                    <div class="btn-group float-end">
+                        <a href="{% url 'blog:post_update' pk=post.id %}" class="btn btn-warning btn-sm">Редактировать</a>
+                        <a href="{% url 'blog:post_delete' pk=post.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>У вас пока нет постов.</p>
+    {% endif %}
+{% endblock %}
